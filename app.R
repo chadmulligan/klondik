@@ -4,6 +4,12 @@ library(klondikBTC)
 
 
 ui <- fluidPage(
+  
+  tags$head(tags$link(rel="shortcut icon", type = "image/png", href="favicon.png")),
+  
+  tags$head(
+    tags$style(HTML("hr {border-top: 1px solid;}"))
+  ),
 
   titlePanel(img(src = "mail.png",
                  height = 113, width = 241),
@@ -56,6 +62,8 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+  session$onSessionEnded(stopApp)
+  
   hideTab(inputId = "nav", 
           target = "Cluster")
   
@@ -97,37 +105,43 @@ server <- function(input, output, session) {
   observeEvent(input$append, {
     
     tryCatch({
-      
-    if (input$address %in% values$searched) warning() else{
-      values$transactions <- rbind(get(input$address), values$transactions)
-      values$allAddresses <- c(input$address, values$allAddresses)
-      output$transactions <- renderDT(DT::datatable(values$transactions, 
-                                                    options = list(lengthMenu = list(c(100, -1),
-                                                                                     c("100", 'All')))))
-      output$allAddresses <- renderText({paste(values$allAddresses, 
-                                               collapse = "\n")})
-
-      updateTabsetPanel(session,
-                        inputId = "nav", 
-                        selected = "Transactions")
-      
-      showTab(inputId = "nav",
-              target = "All Addresses",
-              select = FALSE)
-      
-      values$searched <- c(values$searched, input$address)
-      
+     
+      if (is.null(values$searched)) message() else{   
+        if (input$address %in% values$searched) warning() else{
+          values$transactions <- rbind(get(input$address), values$transactions)
+          values$allAddresses <- c(input$address, values$allAddresses)
+          output$transactions <- renderDT(DT::datatable(values$transactions, 
+                                                        options = list(lengthMenu = list(c(100, -1),
+                                                                                         c("100", 'All')))))
+          output$allAddresses <- renderText({paste(values$allAddresses, 
+                                                   collapse = "\n")})
+    
+          updateTabsetPanel(session,
+                            inputId = "nav", 
+                            selected = "Transactions")
+          
+          showTab(inputId = "nav",
+                  target = "All Addresses",
+                  select = FALSE)
+          
+          values$searched <- c(values$searched, input$address)
+        }
       }
     },
     warning = function(w) {
       showNotification(
         ui = "You already searched this address.",
         type = "warning")
-    },
+      },
     error = function(e) {
       showNotification(
         ui = "Please enter a valid BTC address.",
         type = "error")
+      },
+    message = function(m) {
+      showNotification(
+        ui = "Please start a New Search first.",
+        type = "message")
       }
     )
   })
