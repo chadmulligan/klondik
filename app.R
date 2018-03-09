@@ -1,7 +1,7 @@
 library(shiny)
 library(DT)
 library(klondikBTC)
-
+library(networkD3)
 
 ui <- fluidPage(
   
@@ -41,6 +41,10 @@ ui <- fluidPage(
       helpText("Look for parent addresses from the results"),
       hr(),
       
+      actionButton(inputId = "getgraph", 
+                   label = "Graph Transactions"),
+      hr(),
+      
       downloadButton(outputId = "downloadCSV",
                      label = "Download .csv")
       
@@ -53,7 +57,8 @@ ui <- fluidPage(
                   tabPanel("Cluster", 
                            verbatimTextOutput("cluster"),
                            uiOutput("getclusterinfo")),
-                  tabPanel("All Addresses", verbatimTextOutput("allAddresses"))
+                  tabPanel("All Addresses", verbatimTextOutput("allAddresses")),
+                  tabPanel("graph", forceNetworkOutput("d3", height = "850px"))
                   )
     )
   )
@@ -72,6 +77,9 @@ server <- function(input, output, session) {
   
   hideTab(inputId = "nav", 
           target = "Transactions")
+  
+  hideTab(inputId = "nav", 
+          target = "graph")
   
   values <- reactiveValues()
   
@@ -151,6 +159,7 @@ server <- function(input, output, session) {
   observeEvent(input$getcluster, {
     
     tryCatch({
+      #if is.null(values$cluster) message("already clustered)
       values$cluster <- cluster(values$transactions, values$allAddresses)
     
       values$allAddresses <- unique(c(values$allAddresses, values$cluster))
@@ -199,6 +208,18 @@ server <- function(input, output, session) {
     removeUI(selector = "#clusterinfobutton")
     
     })
+  
+  
+  observeEvent(input$getgraph, {
+    
+    output$d3 <- renderForceNetwork(graphD3(values$transactions, values$allAdresses))
+    
+    showTab(inputId = "nav",
+            target = "graph",
+            select = TRUE)
+    
+  })
+  
   
   
   output$downloadCSV <- downloadHandler(
