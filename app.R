@@ -2,6 +2,7 @@ library(shiny)
 library(DT)
 library(klondikBTC)
 library(networkD3)
+library(rdrop2)
 
 ui <- fluidPage(
   
@@ -24,7 +25,7 @@ ui <- fluidPage(
       textInput(inputId = "address", 
                 label = "Enter a BTC address",
                 value = "",
-                width = "75%",
+                width = "90%",
                 placeholder = "13aK3ydezpfdwQDB34M7dcRugg8XfhQaEE"),
         
       actionButton(inputId = "getinfo", 
@@ -88,9 +89,21 @@ server <- function(input, output, session) {
   
   values <- reactiveValues()
   
-  load("E:/klondik/btc/shiny/data/prices.RData")
   
+###UPDATING THE PRICES DF###
+  lastmodif <- format(file.info("E:/klondik/btc/shiny/data/prices.RData")$mtime, 
+                      format = "%Y-%m-%d")
+  if(lastmodif != Sys.Date()) {
+    token = readRDS("E:/klondik/btc/shiny/data/token.RDS")
+    drop_download(path = "btc-prices/prices.RData", 
+                  local_path = "E:/klondik/btc/shiny/data/",
+                  overwrite = TRUE, 
+                  dtoken = token)
+    load("E:/klondik/btc/shiny/data/prices.RData")
+  }
   
+
+###OUTPUTS###
   observeEvent(input$getinfo, {
       
     tryCatch({
