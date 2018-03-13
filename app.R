@@ -24,20 +24,21 @@ ui <- fluidPage(
       textInput(inputId = "address", 
                 label = "Enter a BTC address",
                 value = "",
-                width = "100%",
+                width = "75%",
                 placeholder = "13aK3ydezpfdwQDB34M7dcRugg8XfhQaEE"),
         
       actionButton(inputId = "getinfo", 
                      label = "New Search"),
+      helpText("Prices in USD are based on daily closing price"),
       hr(),
       
       actionButton(inputId = "append", 
                    label = "Add Search"),
       helpText("Append new address transactions to results"),
       hr(),
-
+      
       actionButton(inputId = "getcluster",
-                     label = "Cluster"),
+                   label = "Cluster"),
       helpText("Look for parent addresses from the results"),
       hr(),
       
@@ -52,8 +53,12 @@ ui <- fluidPage(
     
   
     mainPanel(
+      
+      width = 9, 
+      
       tabsetPanel(id = "nav",
-                  tabPanel("Transactions", DTOutput("transactions")),
+                  tabPanel("Transactions",
+                           DTOutput("transactions")),
                   tabPanel("Cluster", 
                            verbatimTextOutput("cluster"),
                            uiOutput("getclusterinfo")),
@@ -83,17 +88,29 @@ server <- function(input, output, session) {
   
   values <- reactiveValues()
   
+  load("E:/klondik/btc/shiny/data/prices.RData")
+  
   
   observeEvent(input$getinfo, {
       
     tryCatch({
       values$transactions <- get(input$address)
-      output$transactions <- renderDT(DT::datatable(values$transactions, 
-                                                   options = list(lengthMenu = list(c(100, -1),
-                                                                                    c("100", 'All')))))
+      
+      output$transactions <- renderDT({
+        formatCurrency(DT::datatable(values$transactions, 
+                                     options = list(
+                                       lengthMenu = list(c(100, -1), c("100", 'All')), 
+                                       columnDefs = list(list(targets = 1, 
+                                                              render = JS("function(data, type, row, meta) {","return type === 'display' && data.length > 30 ?","'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;","}")))
+                                     )),
+                       columns = "USD")
+        })
+      
       showTab(inputId = "nav",
               target = "Transactions", 
               select = TRUE)
+      
+      removeUI(selector = "#clusterinfobutton")
       
       values$allAddresses <- input$address
       
@@ -110,17 +127,15 @@ server <- function(input, output, session) {
   })
   
   
+  
   observeEvent(input$append, {
     
     tryCatch({
      
       if (is.null(values$searched)) message() else{   
         if (input$address %in% values$searched) warning() else{
-          values$transactions <- rbind(get(input$address), values$transactions)
-          values$allAddresses <- c(input$address, values$allAddresses)
-          output$transactions <- renderDT(DT::datatable(values$transactions, 
-                                                        options = list(lengthMenu = list(c(100, -1),
-                                                                                         c("100", 'All')))))
+          values$transactions <- distinct(rbind(get(input$address), values$transactions))
+          values$allAddresses <- unique(c(input$address, values$allAddresses))
           output$allAddresses <- renderText({paste(values$allAddresses, 
                                                    collapse = "\n")})
     
@@ -154,8 +169,8 @@ server <- function(input, output, session) {
     )
   })
   
-
-
+  
+  
   observeEvent(input$getcluster, {
     
     tryCatch({
@@ -165,10 +180,10 @@ server <- function(input, output, session) {
       values$allAddresses <- unique(c(values$allAddresses, values$cluster))
       
       output$cluster <- renderText({paste(values$cluster, 
-                                          collapse = "\n")})
+                                         collapse = "\n")})
       
       output$allAddresses <- renderText({paste(values$allAddresses, 
-                                               collapse = "\n")})
+                                              collapse = "\n")})
       
       showTab(inputId = "nav",
               target = "Cluster", 
@@ -193,9 +208,10 @@ server <- function(input, output, session) {
   })
 
   
+  
   observeEvent(input$clusterinfobutton, {
 
-    values$transactions <- rbind(get(values$cluster), values$transactions) 
+    values$transactions <- distinct(rbind(get(values$cluster), values$transactions))
     
     values$searched <- c(values$searched, values$cluster)
     
@@ -208,6 +224,7 @@ server <- function(input, output, session) {
     removeUI(selector = "#clusterinfobutton")
     
     })
+  
   
   
   observeEvent(input$getgraph, {
@@ -232,6 +249,7 @@ server <- function(input, output, session) {
   )
   
 }
+
 
 
 shinyApp(ui = ui, server = server)
