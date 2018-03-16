@@ -1,5 +1,5 @@
 
-### **klondik.io - Bitcoin Compliance Toolbox**
+### **klondik.io - A Bitcoin Compliance Toolbox**
 
 This website is based on the blockchain.info API to retrieve BTC transactions in a analysis-friendly way.
 
@@ -37,6 +37,13 @@ For any by bug report, improvements or enquiries, please contact us at <contact@
 <br>
 <br>
 
+#### **Scam Report**
+* Scam report relies on a third-party API with limited connection bandwidth. Requests on large addresses sets can take a while.
+* Reports are queried on the searched addresses (=/= All Addresses. Ex: reports are not queried for clustered addresses that have not been searched through "Get cluster")
+* The third-party API relies itself on BTC users reports. Scam description is unstandardized and reports value is hence left to the appreciation of the site's user.
+<br>
+<br>
+
 #### **All Addresses tab**
 * Lists all the addresses that have been searched by the user plus all addresses identified through clustering.
 * The list does include addresses that have not yet been searched through the "Get new Transactions" button.
@@ -45,8 +52,9 @@ For any by bug report, improvements or enquiries, please contact us at <contact@
 
 #### **Graph**
 * Plots a force network of the transactions.
+* All addresses from the All Addresses Tab are given a specific dot color for identification.
 * **Warning** plotting results with >10 000 transactions lines can severely slow your browser or crash it.
-* The Graph button will regraph the plot should the transactions results have changed. 
+* The Graph button will graph the plot again should the transactions results have changed.
 <br>
 <br>
 

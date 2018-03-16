@@ -6,6 +6,8 @@ library(networkD3)
 library(rdrop2)
 
 
+source("global.R")
+
 ui <- fluidPage(useShinyjs(), 
   
   tags$head(tags$link(rel="shortcut icon", type = "image/png", href="favicon.png")),
@@ -107,6 +109,8 @@ server <- function(input, output, session) {
   
   session$onSessionEnded(stopApp)
   
+  updatePrices()
+  
   hideTab(inputId = "nav", 
           target = "Cluster")
   
@@ -130,20 +134,6 @@ server <- function(input, output, session) {
   values$countfiles <- 0 
   
 
-###UPDATING THE PRICES DF###
-  lastmodif <- format(file.info("E:/klondik/btc/shiny/data/prices.RData")$mtime, 
-                      format = "%Y-%m-%d")
-  if(lastmodif != Sys.Date()) {
-    token = readRDS("E:/klondik/btc/shiny/data/token.RDS")
-    drop_download(path = "btc-prices/prices.RData", 
-                  local_path = "E:/klondik/btc/shiny/data/",
-                  overwrite = TRUE, 
-                  dtoken = token)
-  }
-  
-  load("E:/klondik/btc/shiny/data/prices.RData", envir=.GlobalEnv)
-  
-
 ###OUTPUTS###
   observeEvent(input$getinfo, {
       
@@ -151,7 +141,7 @@ server <- function(input, output, session) {
       
       if(isTruthy(input$address)) {
         
-        values$transactions <- get(input$address)
+        values$transactions <- getBTC(input$address)
         values$allAddresses <- input$address
         values$searched <- input$address 
         reset("address")
@@ -169,7 +159,7 @@ server <- function(input, output, session) {
                                           stringsAsFactors = FALSE),
                           use.names = FALSE))
 
-            values$transactions <- get(values$f)
+            values$transactions <- getBTC(values$f)
             values$allAddresses <- values$f
             values$searched <- values$f
             
@@ -179,6 +169,7 @@ server <- function(input, output, session) {
            }
         }
 
+      
       output$transactions <- renderDT({
       formatCurrency(DT::datatable(values$transactions,
                                    options = list(
@@ -188,6 +179,8 @@ server <- function(input, output, session) {
                                    )),
                      columns = "USD")
         })
+      
+      
       
       showTab(inputId = "nav",
               target = "Transactions", 
@@ -227,7 +220,7 @@ server <- function(input, output, session) {
      
       if (is.null(values$searched)) message() else{   
         if (input$address %in% values$searched) warning() else{
-          values$transactions <- distinct(rbind(get(input$address), values$transactions))
+          values$transactions <- distinct(rbind(getBTC(input$address), values$transactions))
           values$allAddresses <- unique(c(input$address, values$allAddresses))
           output$allAddresses <- renderText({paste(values$allAddresses, 
                                                    collapse = "\n")})
@@ -304,7 +297,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$clusterinfobutton, {
 
-    values$transactions <- distinct(rbind(get(values$cluster), values$transactions))
+    values$transactions <- distinct(rbind(getBTC(values$cluster), values$transactions))
     
     values$searched <- c(values$searched, values$cluster)
     
