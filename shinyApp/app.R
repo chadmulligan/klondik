@@ -91,6 +91,7 @@ ui <- fluidPage(useShinyjs(),
                   tabPanel("Scam Report", 
                            style = "overflow-y:scroll; max-height: 750px",
                            value = "scamDT", 
+                           
                            uiOutput("scam")),
                   tabPanel("All Addresses", 
                            style = "overflow-y:scroll; max-height: 750px",
@@ -107,7 +108,7 @@ ui <- fluidPage(useShinyjs(),
 
 server <- function(input, output, session) {
   
-  session$onSessionEnded(stopApp)
+  #session$onSessionEnded(stopApp)
   
   updatePrices()
   
