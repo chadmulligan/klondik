@@ -11,7 +11,7 @@ RUN R -e "devtools::install_github('chadmulligan/klondikbtc-pkg', auth_token = '
 
 ADD shiny /srv/shiny-server/
 
-EXPOSE 3838
+EXPOSE 80
 
 COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
 COPY shiny-server.sh /usr/bin/shiny-server.sh
