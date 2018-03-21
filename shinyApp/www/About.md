@@ -5,7 +5,7 @@ This website is based on the blockchain.info API to retrieve BTC transactions in
 
 Being based on a third-party API with query limitations, please refrain from unnecessary searches or massive cluster transactions retrieval.
 
-For any by bug report, improvements or enquiries, please contact us at <contact@klondik.io>.
+For any by bug report, improvements or enquiries, please contact us at <bitcompliance@klondik.io>.
 <br>
 <br>
 
