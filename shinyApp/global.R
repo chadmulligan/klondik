@@ -17,3 +17,5 @@ updatePrices <- function()  {
 
 ###LOAD###
 load("/srv/shiny-server/www/data/prices.RData") 
+
+apikey <- "c6b6a8d1-ec54-442f-9816-85b7dd1db06d"
