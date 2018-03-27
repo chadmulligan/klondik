@@ -1,5 +1,5 @@
 
-### **klondik.io - A Bitcoin Compliance Toolbox**
+### **Bitcompliance - a klondik.io Bitcoin Compliance Toolbox**
 
 This website aims at helping compliance departments in their tasks of onboarding bitcoin clients. This will help you:
 * retrieving bitcoin transactions in an analysis-friendly way,
@@ -8,7 +8,7 @@ This website aims at helping compliance departments in their tasks of onboarding
 * identify fraudulent transactions (mixers) through graphs,
 * checking whether the address(es) has been reported by other bitcoin users as scam.
 
-**Warning** Being based on the blockchain.info API, massive transactions queries might take a while. we are currently working on a dedicated database with improved capabilities.
+**Warning** Being based on the blockchain.info API, massive transactions queries might take a while. We are currently working on a dedicated database with improved capabilities.
 <br>
 <br>
 
