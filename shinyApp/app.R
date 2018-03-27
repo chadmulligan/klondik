@@ -117,7 +117,7 @@ server <- function(input, output, session) {
     {updatePrices()},
     error = function(e){
       showNotification(
-        ui = "Failed to update prices",
+        ui = paste0(e),
         type = "error")
     })
 
