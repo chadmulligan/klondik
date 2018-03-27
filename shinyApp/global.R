@@ -8,7 +8,7 @@ updatePrices <- function()  {
   if(lastmodif != Sys.Date()) {
   token = readRDS("www/data/token.rds")
   drop_download(path = "btc-prices/prices.Rdata",
-                local_path = "www/data/",
+                local_path = "www/data",
                 overwrite = TRUE,
                 dtoken = token)
   }

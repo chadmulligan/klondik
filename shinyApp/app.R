@@ -16,9 +16,9 @@ ui <- fluidPage(useShinyjs(),
     tags$style(HTML("hr {border-top: 1px solid;}"))
   ),
 
-  titlePanel(img(src = "mail.png",
-                 height = 113, width = 241),
-             windowTitle = "klondik.io - Bitcoin Compliance Toolbox"),
+  titlePanel(a(img(src = "mail.png",
+                 height = 113, width = 241), href="http://klondik.io"),
+             windowTitle = "bitcompliance - A Bitcoin Compliance Toolbox"), 
 
   sidebarLayout(
 

@@ -1,7 +1,7 @@
 
 ### **klondik.io - A Bitcoin Compliance Toolbox**
 
-This website aims at helping compliance departments in their tasks of
+This website aims at helping compliance departments in their tasks of onboarding bitcoin clients. This will help you:
 * retrieving bitcoin transactions in an analysis-friendly way,
 * confronting the client's trade (hi)story,
 * identifying all addresses owned by the client,
