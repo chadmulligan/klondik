@@ -28,5 +28,5 @@ write.csv(df.prices, "/srv/shiny-server/www/data/prices.csv", row.names = FALSE)
 save(df.prices, file= "/srv/shiny-server/www/data/prices.RData")
 
 ##backup
-drop_upload("prices.csv", path = "btc-prices", dtoken = token)
-drop_upload("prices.RData", path = "btc-prices", dtoken = token)
+drop_upload("/srv/shiny-server/www/data/prices.csv", path = "btc-prices", dtoken = token)
+drop_upload("/srv/shiny-server/www/data/prices.RData", path = "btc-prices", dtoken = token)
