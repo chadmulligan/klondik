@@ -113,13 +113,13 @@ server <- function(input, output, session) {
   #session$onSessionEnded(stopApp)
   session$allowReconnect(TRUE)
 
-  tryCatch(
-    {updatePrices()},
-    error = function(e){
-      showNotification(
-        ui = paste0(e),
-        type = "error")
-    })
+  # tryCatch(
+  #   {updatePrices()},
+  #   error = function(e){
+  #     showNotification(
+  #       ui = paste0(e),
+  #       type = "error")
+  #   })
 
   hideTab(inputId = "nav",
           target = "Cluster")
