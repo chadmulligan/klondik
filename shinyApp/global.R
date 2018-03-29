@@ -7,7 +7,7 @@ updatePrices <- function()  {
                       format = "%Y-%m-%d")
   if(lastmodif != Sys.Date()) {
   token = readRDS("/srv/shiny-server/www/data/token.rds")
-  drop_download(path = "btc-prices/prices.Rdata",
+  drop_download(path = "btc-prices/prices.RData",
                 local_path = "/srv/shiny-server/www/data",
                 overwrite = TRUE,
                 dtoken = token)
@@ -17,6 +17,6 @@ updatePrices <- function()  {
 
 ###LOAD###
 load("/srv/shiny-server/www/data/prices.RData") 
-#load("/srv/shiny-server/www/data/prices.RData") 
+
 
 apikey <- "c6b6a8d1-ec54-442f-9816-85b7dd1db06d"

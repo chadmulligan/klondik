@@ -6,7 +6,7 @@ output: pdf_document
 ---
 \AddToShipoutPictureFG{
   \AtPageCenter{% or \AtTextCenter
-    \makebox[0pt]{\rotatebox[origin=c]{45}{%
+    \makebox[0pt]{\rotatebox[origin=c]{0}{%
       \scalebox{.75}{\transparent{0.2} \includegraphics{mail.png}}%
     }}
   }
