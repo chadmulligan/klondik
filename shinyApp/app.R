@@ -217,7 +217,8 @@ server <- function(input, output, session) {
       },
       error = function(e) {
         showNotification(
-          ui = "Please enter a valid BTC address.",
+          #ui = "Please enter a valid BTC address.",
+          ui = paste0(e),
           type = "error")}
       )
   })
