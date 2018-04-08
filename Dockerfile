@@ -3,7 +3,8 @@ FROM rocker/shiny
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils \
     sudo \
     libxml2-dev\
-    libssl-dev
+    libssl-dev\
+    libv8-3.14-dev
 
 RUN R -e "install.packages(c('shiny', 'rmarkdown', 'DT', 'shinyjs', 'rdrop2', 'tidyr', 'magrittr', 'V8'), repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages(c('devtools'), repos='http://cran.rstudio.com/')"
