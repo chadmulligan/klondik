@@ -84,13 +84,10 @@ margin-top: 10px;
 .hr{
 border: 1px solid #ffffff;
 }
-#wrapper {
-overflow: hidden; 
-}
-#first {
-float:left; 
-}
-#second {
-float: left;
+.nav-pills li.active a, 
+.nav-pills li.active a:focus, 
+.nav-pills li.active a:hover {
+  color: #fffff;
+  background-color: rgba(24, 72, 114, .8);
 }
 "

@@ -4,6 +4,8 @@ library(DT)
 library(klondikBTC)
 library(networkD3)
 library(rdrop2)
+library(tidyr)
+library(magrittr)
 
 
 source("global.R")
