@@ -20,7 +20,7 @@ ui <- fluidPage(useShinyjs(),
   titlePanel(a(img(src = "mail.png"), href="http://klondik.io"),
              windowTitle = "bitcompliance - A Bitcoin Compliance Toolbox"), 
 
-  extendShinyjs(script = "hideTabs.js"),
+  extendShinyjs(script = "hideTabs.js", functions = c("init", "showTabSelect ", "showTab ", "hideTab ")),
   
   sidebarLayout(
     
