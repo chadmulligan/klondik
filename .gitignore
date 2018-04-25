@@ -1,2 +1,5 @@
 .Rhistory
 
+COOKIESECRET.txt
+setup shiny auth0.txt
+.env

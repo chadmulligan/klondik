@@ -15,21 +15,21 @@ This will help you:
 <br>
 <br>
 
-For any by bug report, improvements or enquiries, please contact us at <bitcompliance@klondik.io>.
+For any by bug report, improvements or enquiries, please contact us at **<bitcompliance@klondik.io>**.
 <br>
 <br>
 
 **Quick Guide to the App**
 
-* [New Search](#New Search)
-* [Add Search - Add a new search to the Results](#Add Search)
-* [Transactions Summary - A summary of the Transactions Results](#Summary)
-* [Cluster - Identify parent addresses](#Cluster)
-* [Get Cluster Info - Get transactions from parent addresses](#Get New Transactions)
-* [Scam Report - Were the addresses reported for Scam?](#Scam)
-* [All Addresses Tab - List of all identified Addresses](#AllAddresses)
-* [Graph - Graph the Transactions results](#Graph)
-* [Download Transactions - Download the Transactions Results](#DLTransacs)
+* [**New Search**](#New Search)
+* [**Add a new search to the Results**](#Add Search)
+* [**Summarise the Transactions Results**](#Summary)
+* [**Identify parent addresses**](#Cluster)
+* [**Get transactions from parent addresses**](#Get New Transactions)
+* [**Were the addresses reported for Scam?**](#Scam)
+* [**List all identified Addresses**](#AllAddresses)
+* [**Graph the Transactions results**](#Graph)
+* [**Download the Transactions Results**](#DLTransacs)
 <br>
 <br>
 

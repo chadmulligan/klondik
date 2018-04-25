@@ -52,12 +52,12 @@ border-radius: 0px;
 font-size: 14px; 
 }
 #cluster{
-width: 23%; 
+width: 25%; 
 margin-left: 10px; 
 text-align: center;
 }
 #allAddresses{
-width: 23%;
+width: 25%;
 margin-left: 10px;
 text-align: center;
 }
@@ -67,7 +67,11 @@ background-color: rgba(24, 72, 114, .8);
 color: #ffffff;
 }
 #clusterinfobutton{
-margin-left: 29px; 
+margin-left: 48px; 
+border-color: rgba(24, 72, 114, .8);
+border: 3px solid ;
+}
+#downloadCSV{
 border-color: rgba(24, 72, 114, .8);
 border: 3px solid ;
 }

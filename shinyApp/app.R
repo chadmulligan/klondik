@@ -71,11 +71,7 @@ ui <- fluidPage(useShinyjs(),
       actionButton(inputId = "getgraph",
                    label = "Graph Transactions"),
 
-      uiOutput("DLGraph"),
-      hr(),
-
-      downloadButton(outputId = "downloadCSV",
-                     label = "Download Transactions")
+      uiOutput("DLGraph")
 
     ),
 
@@ -86,25 +82,30 @@ ui <- fluidPage(useShinyjs(),
 
       tabsetPanel(id = "nav",
                   type = "pills",
+                  
                   tabPanel("Transactions",
                            style = "overflow-y: auto; max-height: 800px",
-                           DTOutput("transactions")),
+                           br(), 
+                           downloadButton(outputId = "downloadCSV",
+                                          label = "Download Transactions"),
+                           DTOutput("transactions")
+                           ),
                   
                   tabPanel("Summary", 
                            style = "overflow-y:auto; max-height: 800px",
                            br(tags$ul(tags$li(h4("First and last transactions for each address:")))),
-                           div(style= 'width: 60%; margin-left: 100px', uiOutput("lastfirst")),
+                           div(style= 'width: 65%; margin-left: 70px', uiOutput("lastfirst")),
                            tags$br(), 
                            br(tags$ul(tags$li(h4("Number of transactions for each address:")))),
-                           div(style= 'width: 60%; margin-left: 100px', uiOutput("totalTransacs")),
+                           div(style= 'width: 60%; margin-left: 70px', uiOutput("totalTransacs")),
                            tags$br(), 
-                           div(style= 'width: 40%; margin-left: 100px', uiOutput("inputoutput")),
+                           div(style= 'width: 40%; margin-left: 75px', uiOutput("inputoutput")),
                            tags$br(),
                            br(tags$ul(tags$li(h4("Largest Inputs/Outputs from the set of addresses:")))),
-                           div(style= 'width: 80%; margin-left: 100px', uiOutput("transacs1000")),
+                           div(style= 'width: 85%; margin-left: 70px', uiOutput("transacs1000")),
                            tags$br(),
                            br(tags$ul(tags$li(h4("Largest transactions involving the set of addresses:")))),
-                           div(style= 'width: 80%; margin-left: 100px', uiOutput("biggestTransacs")),
+                           div(style= 'width: 85%; margin-left: 70px', uiOutput("biggestTransacs")),
                            tags$br(),
                            tags$br()
                            ),
@@ -153,27 +154,11 @@ server <- function(input, output, session) {
   #       type = "error")
   #   })
 
-  # hideTab(inputId = "nav",
-  #         target = "Cluster")
-  # 
-  # hideTab(inputId = "nav",
-  #         target = "scamnull")
-  # 
-  # hideTab(inputId = "nav",
-  #         target = "scamDT")
-  # 
-  # hideTab(inputId = "nav",
-  #         target = "All Addresses")
-  # 
-  # hideTab(inputId = "nav",
-  #         target = "Transactions")
-  # 
-  # hideTab(inputId = "nav",
-  #         target = "Graph")
-
   values <- reactiveValues()
 
   values$countfiles <- 0
+  
+  values$countsearches <- 0
 
 
 ###OUTPUTS###
@@ -187,6 +172,7 @@ server <- function(input, output, session) {
           values$transactions <- getBTC(input$address)
           values$allAddresses <- input$address
           values$searched <- input$address
+          values$countsearches <- values$countsearches + 1
           reset("address")
         })
 
@@ -209,6 +195,7 @@ server <- function(input, output, session) {
               values$searched <- values$f
   
               values$countfile <- values$countfile +1
+              values$countsearches <- values$countsearches + 1
               reset("file1")
             })
 
@@ -243,10 +230,26 @@ server <- function(input, output, session) {
       #         target = "All Addresses",
       #         select = FALSE)
 
-      removeUI(selector = "#clusterinfobutton")
-      values$cluster <- NULL
-      values$scamAddresses <- NULL
-      values$scamResults <- NULL
+      ###void all previous searches 
+      if (values$countsearches > 0) { 
+        removeUI(selector = "#clusterinfobutton")
+        removeUI(selector = "#downloadgraph")
+        removeUI(selector = "#lastfirstDT")
+        removeUI(selector = "#totalTransacsDT")
+        removeUI(selector = "#inputoutputDT")
+        removeUI(selector = "#transacs1000DT")
+        removeUI(selector = "#biggestTransacsDT")
+        js$hideTab("Cluster")
+        js$hideTab("scamnull")
+        js$hideTab("scamDT")
+        js$hideTab("Graph")
+        js$hideTab("Summary")
+        values$cluster <- NULL
+        values$scamAddresses <- NULL
+        values$scamResults <- NULL
+        values$graph <- NULL
+        values$summary <- NULL
+        }
 
       },
       warning = function(w) {
@@ -264,6 +267,7 @@ server <- function(input, output, session) {
     
   })
 
+  
 
   observeEvent(input$append, {
 
@@ -314,78 +318,88 @@ server <- function(input, output, session) {
   
   observeEvent(input$summary, {
     
-    values$summary <- summaryTransacs(values$transactions, values$searched)
-    
-    
-    ###Last and first transactions
-    output$lastfirstDT <- renderDT(formatDate(DT::datatable(values$summary$lastfirstTransacs,
-                                                            colnames = c("Address", "First Transaction", "Last Transaction"),
-                                                            rownames = FALSE,
-                                                            options = list(dom = 't')),
-                                              columns = c("First", "Last"),
-                                              method = "toUTCString")
-                                   )
-    
-    output$lastfirst <- renderUI({DTOutput("lastfirstDT")})
-    
-    
-    ###Total Transactions
-    output$totalTransacsDT <- renderDT(formatCurrency(DT::datatable(values$summary$totalTransacs,
-                                                                    colnames = c("Address", "Input/Output", "Nb of Transactions",
-                                                                                 "Total BTC", "Total USD"),
-                                                                    options = list(dom = 't',
-                                                                                   columnDefs = list(list(className = 'dt-center', targets = 1:2))),
-                                                                    rownames = FALSE),
-                                                      columns = "totalUSD")
+    tryCatch({
+      
+      if (is.null(values$searched)) message() else {
+        values$summary <- summaryTransacs(values$transactions, values$searched)
+        
+        
+        ###Last and first transactions
+        output$lastfirstDT <- renderDT(formatDate(DT::datatable(values$summary$lastfirstTransacs,
+                                                                colnames = c("Address", "First Transaction", "Last Transaction"),
+                                                                rownames = FALSE,
+                                                                options = list(dom = 't')),
+                                                  columns = c("First", "Last"),
+                                                  method = "toUTCString")
                                        )
+        
+        output$lastfirst <- renderUI({DTOutput("lastfirstDT")})
+        
+        
+        ###Total Transactions
+        output$totalTransacsDT <- renderDT(formatCurrency(DT::datatable(values$summary$totalTransacs,
+                                                                        colnames = c("Address", "Input/Output", "Nb of Transactions",
+                                                                                     "Total BTC", "Total USD"),
+                                                                        options = list(dom = 't',
+                                                                                       columnDefs = list(list(className = 'dt-center', targets = 1:2))),
+                                                                        rownames = FALSE),
+                                                          columns = "totalUSD")
+                                           )
+        
+        output$totalTransacs <- renderUI({DTOutput("totalTransacsDT")})
+        
+        
+        ###Summary input/output
+        output$inputoutputDT <- renderDT(DT::datatable(values$summary$summaryInputOutput,
+                                                       colnames = c("Nb of Transactions", "Total BTC", "Total USD"),
+                                                       options = list(dom = 't',
+                                                                      columnDefs = list(list(className = 'dt-center', targets = 1)))) %>% 
+                                           formatCurrency(columns = "TotalUSD")
+                                         )
     
-    output$totalTransacs <- renderUI({DTOutput("totalTransacsDT")})
-    
-    
-    ###Summary input/output
-    output$inputoutputDT <- renderDT(DT::datatable(values$summary$summaryInputOutput,
-                                                   colnames = c("Nb of Transactions", "Total BTC", "Total USD"),
-                                                   options = list(dom = 't',
-                                                                  columnDefs = list(list(className = 'dt-center', targets = 1)))) %>% 
-                                       formatCurrency(columns = "TotalUSD")
-                                     )
-
-    output$inputoutput <- renderUI({DTOutput("inputoutputDT")})
-    
-    
-    ###Individual transactions > $1000
-    output$transacs1000DT <- renderDT(DT::datatable(values$summary$transacs1000,
-                                                    colnames = c("Address", "Transaction Hash",
-                                                                 "Input/Output", "Time UTC",
-                                                                 "Total BTC", "Total USD"),
-                                                    options = list(dom = 'rtpl',
-                                                                   columnDefs = list(list(targets = 1,
-                                                                                          render = JS("function(data, type, row, meta) {","return type === 'display' && data.length > 30 ?","'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;","}")),
-                                                                                     list(className = 'dt-center', targets = 2))),
-                                                    rownames = FALSE) %>%
-                                        formatCurrency("totalUSD") %>%
-                                        formatDate(columns = "TimeUTC", method = "toUTCString"))
-    
-    output$transacs1000 <- renderUI({DTOutput("transacs1000DT")})
-    
-    
-    ###Biggest transactions
-    output$biggestTransacsDT <- renderDT(DT::datatable(values$summary$biggestTransacs,
-                                                       colnames = c("Transaction Hash",
-                                                                    "Time UTC", "Total BTC", "Total USD"),
-                                                       options = list(dom = 'rtpl'),
-                                                       rownames = FALSE) %>%
-                                           formatCurrency("totalUSD") %>%
-                                           formatDate(columns = "TimeUTC", method = "toUTCString"))
-    
-    output$biggestTransacs <- renderUI({DTOutput("biggestTransacsDT")})
-    
-    
-    ###Show tab
-    # showTab("nav", "Summary", select = TRUE)
-    
-    js$showTabSelect("Summary")
-    
+        output$inputoutput <- renderUI({DTOutput("inputoutputDT")})
+        
+        
+        ###Individual transactions > $1000
+        output$transacs1000DT <- renderDT(DT::datatable(values$summary$transacs1000,
+                                                        colnames = c("Address", "Transaction Hash",
+                                                                     "Input/Output", "Time UTC",
+                                                                     "Total BTC", "Total USD"),
+                                                        options = list(dom = 'rtpl',
+                                                                       columnDefs = list(list(targets = 1,
+                                                                                              render = JS("function(data, type, row, meta) {","return type === 'display' && data.length > 30 ?","'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;","}")),
+                                                                                         list(className = 'dt-center', targets = 2))),
+                                                        rownames = FALSE) %>%
+                                            formatCurrency("totalUSD") %>%
+                                            formatDate(columns = "TimeUTC", method = "toUTCString"))
+        
+        output$transacs1000 <- renderUI({DTOutput("transacs1000DT")})
+        
+        
+        ###Biggest transactions
+        output$biggestTransacsDT <- renderDT(DT::datatable(values$summary$biggestTransacs,
+                                                           colnames = c("Transaction Hash",
+                                                                        "Time UTC", "Total BTC", "Total USD"),
+                                                           options = list(dom = 'rtpl'),
+                                                           rownames = FALSE) %>%
+                                               formatCurrency("totalUSD") %>%
+                                               formatDate(columns = "TimeUTC", method = "toUTCString"))
+        
+        output$biggestTransacs <- renderUI({DTOutput("biggestTransacsDT")})
+        
+        
+        ###Show tab
+        # showTab("nav", "Summary", select = TRUE)
+        
+        js$showTabSelect("Summary")}
+      
+      },
+      message = function(w) {
+        showNotification(
+          ui = "Please start a New Search first.",
+          type = "message")
+      }
+    )
   })
 
 
@@ -529,29 +543,31 @@ server <- function(input, output, session) {
   observeEvent(input$getgraph, {
 
     tryCatch({
-      values$graph <- graphD3(df = values$transactions,
-                              addresses = values$allAddresses)
+      if (is.null(values$searched)) message() else {
+        values$graph <- graphD3(df = values$transactions,
+                                addresses = values$allAddresses)
 
-      output$d3 <- renderForceNetwork(values$graph)
-
-      # showTab(inputId = "nav",
-      #         target = "Graph",
-      #         select = TRUE)
-      
-      js$showTabSelect("Graph")
-
-
-      output$DLGraph <- renderUI({
-        tags$br(
-          downloadButton(outputId = "downloadgraph",
-                       label = "Download Graph")
+        output$d3 <- renderForceNetwork(values$graph)
+  
+        # showTab(inputId = "nav",
+        #         target = "Graph",
+        #         select = TRUE)
+        
+        js$showTabSelect("Graph")
+  
+  
+        output$DLGraph <- renderUI({
+          tags$br(
+            downloadButton(outputId = "downloadgraph",
+                         label = "Download Graph")
           )
         })
-      },
-      warning = function(w) {
-        showNotification(
-          ui = paste("Please start a New Search first."),
-          type = "warning")
+      }
+    },
+    message = function(w) {
+      showNotification(
+        ui = paste(w),
+        type = "message")
       }
     )
   })
