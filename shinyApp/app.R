@@ -566,7 +566,7 @@ server <- function(input, output, session) {
     },
     message = function(w) {
       showNotification(
-        ui = paste(w),
+        ui = paste("Please start a New Search first."),
         type = "message")
       }
     )

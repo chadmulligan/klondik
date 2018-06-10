@@ -46,7 +46,7 @@ margin-left: 10px;
 font-size: 1.2em;
 }
 .shiny-text-output{
-width: 30%;
+width: 35%;
 margin-top:10px;
 border-radius: 0px;
 font-size: 14px; 
